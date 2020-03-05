@@ -1,25 +1,53 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import MaterialTable from 'material-table'
 
 function App() {
+  let data = [
+    {
+      name: 'Almond',
+      date: '12-20-20'
+    },
+    {
+      name: 'Apple',
+      date: '25-04-19'
+    },
+    {
+      name: 'Metapod',
+      date: '12-24-20'
+    },
+    {
+      name: 'Cactus',
+      date: '17-02-19'
+    },
+    { 
+      name: 'Zodiac',
+      date: '20-03-19'
+    }
+  ]
+
+  // Enforces sort on date
+  let sortDate = () => {
+    let a = data.sort(function(a, b){
+      var aa = a.date.split('-').reverse().join(),
+          bb = b.date.split('-').reverse().join();
+      return aa < bb ? -1 : (aa > bb ? 1 : 0);
+    })
+    return a
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div style={{ maxWidth: '100%' }}>
+        <MaterialTable
+          columns={[
+            { title: 'Name', field: 'name', sorting: false },
+            { title: 'Date', field: 'date', sorting: false, customSort: sortDate() }
+          ]}
+          data={data}
+          title='My Table'
+        />
+      </div>
+    </>
   );
 }
 
