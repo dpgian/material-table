@@ -2,30 +2,57 @@ import React, {useState} from 'react';
 import MaterialTable from 'material-table'
 
 function App() {
+
   let initialData = [
     {
+      id: 1,
       name: 'Almond',
-      date: '12-20-20'
+      date: ['12-20-20', '10-20-20']
     },
     {
+      id: 2,
       name: 'Apple',
-      date: '25-04-19'
+      date: ['25-04-19']
     },
     {
+      id: 3,
       name: 'Metapod',
-      date: '12-24-20'
+      date: ['12-24-20']
     },
     {
+      id: 4,
       name: 'Cactus',
-      date: '17-02-19'
+      date: ['17-02-19']
     },
     { 
+      id: 5,
       name: 'Zodiac',
-      date: '20-03-19'
+      date: ['20-03-19']
+    },
+    {
+      id: 6,
+      name: 'Monster',
+      date: ['21-03-19']
     }
   ]
 
-  let [ data, setData ] = useState(initialData)
+  let splitData = (initialData) => {
+    let newarray = []
+
+    initialData.forEach(x => {  
+      x.date.length > 1 ? 
+      x.date.map(y => 
+          y === x.date[0] ? 
+          newarray = [...newarray, {id: x.id, name: x.name, date: y}] :
+          newarray = [...newarray, {id: new Date().valueOf(), date: y, parentId: x.id}])
+      : 
+      newarray = [...newarray, {...x, date: x.date[0]}]
+    })
+
+    return newarray
+  }
+
+  let [ data, setData ] = useState(splitData(initialData))
 
   // Enforces sort on date
   let sortDate = () => {
@@ -43,7 +70,7 @@ function App() {
         <MaterialTable
           columns={[
             { title: 'Name', field: 'name', sorting: false },
-            { title: 'Date', field: 'date', sorting: false, customSort: sortDate() }
+            { title: 'Date', field: 'date', sorting: false, customSort: sortDate }
           ]}
           data={data}
           title='My Table'
@@ -78,8 +105,11 @@ function App() {
             })
           }}
           options={{
-            actionsColumnIndex: -1
+            actionsColumnIndex: -1,
+            paging: false,
+            draggable: false
           }}
+          parentChildData={(row, rows) => rows.find(a => a.id === row.parentId)}
         />
       </div>
     </>
