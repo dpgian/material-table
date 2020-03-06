@@ -1,5 +1,9 @@
 import React, {useState} from 'react';
 import MaterialTable from 'material-table'
+import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers'
+
+import moment from 'moment'
+import MomentUtils from '@date-io/moment'
 
 function App() {
 
@@ -7,7 +11,7 @@ function App() {
     {
       id: 1,
       name: 'Almond',
-      date: ['12-20-20', '10-20-20']
+      date: ['12-20-18', '10-20-20']
     },
     {
       id: 2,
@@ -53,6 +57,7 @@ function App() {
   }
 
   let [ data, setData ] = useState(splitData(initialData))
+  let [ selectedDate, handleDateChange ] = useState(new Date())
 
   // Enforces sort on date
   let sortDate = () => {
@@ -70,7 +75,21 @@ function App() {
         <MaterialTable
           columns={[
             { title: 'Name', field: 'name', sorting: false },
-            { title: 'Date', field: 'date', sorting: false, customSort: sortDate }
+            { title: 'Date', field: 'date', sorting: false,
+            editComponent: () => (
+              <MuiPickersUtilsProvider utils={MomentUtils}>
+                <DatePicker
+                  disablePast
+                  variant="inline"
+                  format='DD-MM-YY'
+                  margin="normal"
+                  id="date-picker"
+                  value={selectedDate}
+                  onChange={handleDateChange}
+                />
+              </MuiPickersUtilsProvider>
+            )
+              }
           ]}
           data={data}
           title='My Table'
@@ -90,10 +109,12 @@ function App() {
           editable={{
             onRowAdd: newItem => new Promise((res, rej) => {
               setTimeout(() => {
-                setData([...data, newItem])
+                let temp = {...newItem, date: moment(selectedDate).format('DD-MM-YY')}
+                setData([...data, {id: new Date().valueOf(), ...temp}])
                 res()
               }, 1000)
             }),
+            //onRowDelete: (item) => Promise.resolve(console.log(item))
             onRowDelete: oldItem => new Promise((res, rej) => {
               setTimeout(() => {
                 let i = data.indexOf(oldItem)
