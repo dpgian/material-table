@@ -40,6 +40,15 @@ function App() {
     }
   ]
 
+  let sortDate = (array) => {
+    let a = array.sort(function(a, b){
+      var aa = a.date.split('-').reverse().join(),
+          bb = b.date.split('-').reverse().join();
+      return aa < bb ? -1 : (aa > bb ? 1 : 0);
+    })
+    return a
+  }
+
   let splitData = (initialData) => {
     let newarray = []
 
@@ -52,22 +61,14 @@ function App() {
       : 
       newarray = [...newarray, {...x, date: x.date[0]}]
     })
-
+    
+    sortDate(newarray)
     return newarray
   }
 
   let [ data, setData ] = useState(splitData(initialData))
   let [ selectedDate, handleDateChange ] = useState(new Date())
 
-  // Enforces sort on date
-  let sortDate = () => {
-    let a = data.sort(function(a, b){
-      var aa = a.date.split('-').reverse().join(),
-          bb = b.date.split('-').reverse().join();
-      return aa < bb ? -1 : (aa > bb ? 1 : 0);
-    })
-    return a
-  }
 
   return (
     <>
@@ -110,7 +111,7 @@ function App() {
             onRowAdd: newItem => new Promise((res, rej) => {
               setTimeout(() => {
                 let temp = {...newItem, date: moment(selectedDate).format('DD-MM-YY')}
-                setData([...data, {id: new Date().valueOf(), ...temp}])
+                setData(sortDate([...data, {id: new Date().valueOf(), ...temp}]))
                 res()
               }, 1000)
             }),
